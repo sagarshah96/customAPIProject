@@ -1,6 +1,7 @@
 using CustomAPIProject.ApplicationContext;
 using CustomAPIProject.Filters;
 using CustomAPIProject.Repository;
+using CustomAPIProject.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -39,6 +40,7 @@ namespace CustomAPIProject
             //services.AddTransient<CustomMiddleware>();
             services.AddScoped<_IRepository<Customer>, CustomerRepository<Customer>>();
             services.AddScoped<_IRepository<Login>, LoginRepository<Login>>();
+            services.AddScoped<_ILoginService, LoginService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CustomAPIProject", Version = "v1" });
@@ -89,7 +91,7 @@ namespace CustomAPIProject
             //}));
 
             // Custome Exception Middleware
-            app.UseMiddleware<UnhandledExceptionMiddleware>();
+            app.UseMiddleware<HandledExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

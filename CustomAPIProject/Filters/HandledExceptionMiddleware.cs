@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace CustomAPIProject.Filters
 {
-    public class UnhandledExceptionMiddleware
+    public class HandledExceptionMiddleware
     {
         private readonly ILogger logger;
         private readonly RequestDelegate next;
 
-        public UnhandledExceptionMiddleware(ILogger<UnhandledExceptionMiddleware> logger, RequestDelegate next)
+        public HandledExceptionMiddleware(ILogger<HandledExceptionMiddleware> logger, RequestDelegate next)
         {
             this.logger = logger;
             this.next = next;

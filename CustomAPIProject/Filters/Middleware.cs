@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CustomAPIProject.ApplicationContext;
+using CustomAPIProject.Repository;
+using CustomAPIProject.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,6 +20,7 @@ namespace CustomAPIProject.Filters
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
         private readonly ILogger logger;
+
         public Middleware(RequestDelegate next, IOptions<AppSettings> appSettings, ILogger<UnhandledExceptionMiddleware> logger)
         {
             _next = next;
@@ -24,23 +28,27 @@ namespace CustomAPIProject.Filters
             this.logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, _ILoginService _Login)
         {
+
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             string controllerName = (string)context.Request.RouteValues["Controller"];
             bool isValid = false;
-            string msg = "";
             if (token != null)
             {
                 isValid = ValidateToken(context, token);
-                if (!isValid)
+
+                bool isDbValid = _Login.TokenValidateInDB(token);
+
+                if (!isValid && !isDbValid)
                 {
-                    context.Response.StatusCode = 401;
-                    msg = "Invalid Token.!!";
-                    await context.Response.WriteAsJsonAsync(
-                        new { msg = msg }
-                        );
-                    logger.LogError(msg + $"Request {context.Request?.Method}: {context.Request?.Path.Value} failed");
+                    await TokenError(context, "Invalid Token.!!");
+                    return;
+
+                }
+                if (!isDbValid)
+                {
+                    await TokenError(context, "Invalid Token.!!");
                     return;
                 }
                 await _next(context);
@@ -49,13 +57,7 @@ namespace CustomAPIProject.Filters
             {
                 if (controllerName != "Login")
                 {
-                    context.Response.StatusCode = 401;
-                    msg = "Please Enter Token.!!";
-                    await context.Response.WriteAsJsonAsync(
-                        new { msg = msg }
-                        );
-
-                    logger.LogError(msg + $"Request {context.Request?.Method}: {context.Request?.Path.Value} failed");
+                    await TokenError(context, "Please Enter Token.!!");
                     return;
                 }
                 await _next(context);
@@ -92,6 +94,15 @@ namespace CustomAPIProject.Filters
                 return false;
             }
             return true;
+        }
+
+        private async Task TokenError(HttpContext context,string msg)
+        {
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsJsonAsync(
+                new { msg = msg }
+                );
+            logger.LogError(msg + $"Request {context.Request?.Method}: {context.Request?.Path.Value} failed");
         }
     }
 }

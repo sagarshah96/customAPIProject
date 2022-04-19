@@ -53,7 +53,7 @@ namespace CustomAPIProject.Repository
 
         public Login GetByID(int id)
         {
-            throw new NotImplementedException();
+            return _dBContext.Login.FirstOrDefault(X => X.CustomerId == id);
         }
 
         public int Update(Login t)
@@ -63,6 +63,8 @@ namespace CustomAPIProject.Repository
 
             return t.LoginId;
         }
+
+       
 
         #endregion
     }

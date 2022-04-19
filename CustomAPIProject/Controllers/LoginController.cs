@@ -22,6 +22,7 @@ namespace CustomAPIProject.Controllers
     {
         private readonly _IRepository<Login> _LoginRepo;
         private readonly AppSettings _appSettings;
+
         public LoginController(_IRepository<Login> lrepository, IOptions<AppSettings> appSettings)
         {
             _LoginRepo = lrepository;
@@ -43,7 +44,22 @@ namespace CustomAPIProject.Controllers
                 return Ok(token);
             }
             return NotFound("Invalid User Name and Password");
-            
+
+        }
+
+        [Authorize(Roles.Admin, Roles.Customer)]
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            int CustomerId = (int)HttpContext.Items["CustomerId"];
+            if (CustomerId > 0)
+            {
+                var customer = _LoginRepo.GetByID(CustomerId);
+                customer.Token = "";
+                _LoginRepo.Update(customer);
+                return Ok("Logout Successfully.!!");
+            }
+            return NotFound();
         }
 
         private string generateJwtToken(Login obj)

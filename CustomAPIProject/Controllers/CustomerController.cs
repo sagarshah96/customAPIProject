@@ -24,8 +24,6 @@ namespace CustomAPIProject.Controllers
             _LoginRepo = lrepository;
         }
 
-
-
         [Authorize(Roles.Admin)]
         [HttpGet]
         public IActionResult GetAllCustomers()
@@ -59,7 +57,7 @@ namespace CustomAPIProject.Controllers
             objLogin.Password = Common.Encrypt(objCustomer.Password);
             objLogin.RoleId = (int)Roles.Customer;
             int LoginID = _LoginRepo.Add(objLogin);
-            return Ok();
+            return Ok("Customer Saved Successfully.!!");
         }
 
         [Authorize(Roles.Admin, Roles.Customer)]
@@ -78,10 +76,8 @@ namespace CustomAPIProject.Controllers
             objLogin.Email = objCustomer.Email;
             objLogin.Password = Common.Encrypt(objCustomer.Password);
             int LoginID = _LoginRepo.Update(objLogin);
-            return Ok();
+            return Ok("Customer Update Successfully.!!");
         }
-
-
 
         [Authorize(Roles.Admin)]
         [HttpDelete("{id}")]
@@ -90,7 +86,7 @@ namespace CustomAPIProject.Controllers
             Customer obj = _CustomerRepo.GetByID(id);
             obj.IsActive = false;
             int CustomerID = _CustomerRepo.Update(obj);
-            return Ok();
+            return Ok("Deleted Successfully.!!");
         }
     }
 }
