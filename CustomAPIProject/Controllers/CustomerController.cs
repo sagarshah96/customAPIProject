@@ -4,6 +4,7 @@ using CustomAPIProject.Models;
 using CustomAPIProject.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,35 +15,55 @@ namespace CustomAPIProject.Controllers
 
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class CustomerController : Controller
+    public class CustomerController : ControllerBase
     {
         private readonly _IRepository<Customer> _CustomerRepo;
         private readonly _IRepository<Login> _LoginRepo;
-        public CustomerController(_IRepository<Customer> crepository, _IRepository<Login> lrepository)
+        //private readonly IMemoryCache _cache;
+        public CustomerController(_IRepository<Customer> crepository, _IRepository<Login> lrepository)/*, IMemoryCache memoryCache)*/
         {
             _CustomerRepo = crepository;
             _LoginRepo = lrepository;
+          //  _cache = memoryCache;
+
         }
 
-        [Authorize(Roles.Admin)]
+        /// Custom Cachable
+        [Cachable(100000)]
+        [Authorize(Roles.Admin,Roles.Customer)]
         [HttpGet]
         public IActionResult GetAllCustomers()
         {
             var customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true);
-            return Json(customer);
+            if (customer == null)
+                return NotFound();
+            return Ok(customer);
+
+            //if (!_cache.TryGetValue("_CustomerCache", out List<Customer> customer))
+            //{
+            //    customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true).ToList();
+            //    var cacheEntryOptions = new MemoryCacheEntryOptions
+            //    {
+            //        AbsoluteExpiration = DateTime.Now.AddMinutes(5),
+            //        SlidingExpiration = TimeSpan.FromMinutes(2),
+            //        Size = 1024,
+            //    };
+            //    _cache.Set("_CustomerCache", customer, cacheEntryOptions);
+            //}
+            //return Ok(customer);
         }
 
 
-       /// <summary>
-       /// Rewrite URL
-       /// </summary>
-       /// <returns></returns>
+        /// <summary>
+        /// Rewrite URL
+        /// </summary>
+        /// <returns></returns>
 
         //[HttpGet]
         //public IActionResult GetAllCustomersv2()
         //{
         //    var customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true);
-        //    return Json(customer);
+        //    return Ok(customer);
         //}
 
         [Authorize(Roles.Admin, Roles.Customer)]
@@ -50,7 +71,9 @@ namespace CustomAPIProject.Controllers
         public IActionResult GetCustomerByID(int id)
         {
             var customer = _CustomerRepo.GetByID(id);
-            return Json(customer);
+            if (customer == null)
+                return NotFound();
+            return Ok(customer);
         }
 
         [HttpPost]

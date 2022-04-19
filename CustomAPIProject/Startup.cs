@@ -39,6 +39,8 @@ namespace CustomAPIProject
             services.AddDbContext<DBContext>(o => o.UseSqlServer(Configuration.GetConnectionString("conectionStr")));
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddTransient<CustomMiddleware>();
+            //services.AddMemoryCache();
+
             services.AddScoped<_IRepository<Customer>, CustomerRepository<Customer>>();
             services.AddScoped<_IRepository<Login>, LoginRepository<Login>>();
             services.AddScoped<_ILoginService, LoginService>();
@@ -98,19 +100,18 @@ namespace CustomAPIProject
             //app.UseRewriter(rewrite);
             #endregion
 
+            #region Global Caching
             //app.Use(async (context, next) =>
             //{
-            //    var url = context.Request.Path.Value;
-
-            //    // Rewrite to index
-            //    if (url.Contains("/Customer/GetAllCustomers"))
-            //    {
-            //        // rewrite and continue processing
-            //        context.Request.Path = "api/Customer/index";
-            //    }
-
+            //    context.Response.GetTypedHeaders().CacheControl =
+            //     new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+            //     {
+            //         Public = true,
+            //         MaxAge = TimeSpan.FromSeconds(60),
+            //     };
             //    await next();
             //});
+            #endregion
 
             // Custome Exception Middleware
             app.UseMiddleware<HandledExceptionMiddleware>();
