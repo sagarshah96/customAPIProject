@@ -30,7 +30,7 @@ namespace CustomAPIProject.Controllers
 
         /// Custom Cachable
         [Cachable(100000)]
-        [Authorize(Roles.Admin,Roles.Customer)]
+        [Authorize(Roles.Admin)]
         [HttpGet]
         public IActionResult GetAllCustomers()
         {
