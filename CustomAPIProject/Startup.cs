@@ -113,7 +113,7 @@ namespace CustomAPIProject
             //});
             #endregion
 
-            // Custome Exception Middleware
+            // Custom Exception Middleware
             app.UseMiddleware<HandledExceptionMiddleware>();
 
             app.UseHttpsRedirection();

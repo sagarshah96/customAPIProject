@@ -1,0 +1,8 @@
+﻿Swagger => Swagger with Authorize
+Default Exception
+Custom Exception Middleware => HandledExceptionMiddleware
+Authorization => RoleWise
+Middleware => For check JWT Token and Any HTTP Request
+Rewrite URL
+Caching => Cachable Attribute => Filters
+Global Caching
