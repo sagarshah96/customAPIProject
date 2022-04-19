@@ -28,11 +28,24 @@ namespace CustomAPIProject.Controllers
         [HttpGet]
         public IActionResult GetAllCustomers()
         {
-            var customer = _CustomerRepo.GetAll().Where(x=>x.IsActive == true);
+            var customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true);
             return Json(customer);
         }
 
-        [Authorize(Roles.Admin,Roles.Customer)]
+
+       /// <summary>
+       /// Rewrite URL
+       /// </summary>
+       /// <returns></returns>
+
+        //[HttpGet]
+        //public IActionResult GetAllCustomersv2()
+        //{
+        //    var customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true);
+        //    return Json(customer);
+        //}
+
+        [Authorize(Roles.Admin, Roles.Customer)]
         [HttpGet("{id}")]
         public IActionResult GetCustomerByID(int id)
         {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,6 +82,7 @@ namespace CustomAPIProject
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomAPIProject v1"));
             }
 
+            #region Default Exception
             // Default Exception
 
             //app.UseExceptionHandler(a => a.Run(async context =>
@@ -89,6 +91,26 @@ namespace CustomAPIProject
             //    var exception = exceptionHandlerPathFeature.Error;
             //    await context.Response.WriteAsJsonAsync(new { error = exception.Message, path = exceptionHandlerPathFeature.Path });
             //}));
+            #endregion
+
+            #region Rewrite URL
+            //var rewrite = new RewriteOptions().AddRewrite("api/Customer/GetAllCustomers", "api/Customer/GetAllCustomersv2", true);
+            //app.UseRewriter(rewrite);
+            #endregion
+
+            //app.Use(async (context, next) =>
+            //{
+            //    var url = context.Request.Path.Value;
+
+            //    // Rewrite to index
+            //    if (url.Contains("/Customer/GetAllCustomers"))
+            //    {
+            //        // rewrite and continue processing
+            //        context.Request.Path = "api/Customer/index";
+            //    }
+
+            //    await next();
+            //});
 
             // Custome Exception Middleware
             app.UseMiddleware<HandledExceptionMiddleware>();
@@ -102,10 +124,20 @@ namespace CustomAPIProject
             app.UseMiddleware<Middleware>();
             //app.UseMiddleware<CustomMiddleware>();
 
+            // API Controller Route
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            #region Custom Controller Route
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllerRoute(
+            //        name: "default",
+            //        pattern: "{controller=Customer}/{action=GetAllCustomers}/{id?}");
+            //});
+            #endregion
         }
 
     }

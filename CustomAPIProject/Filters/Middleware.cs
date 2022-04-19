@@ -1,12 +1,8 @@
-﻿using CustomAPIProject.ApplicationContext;
-using CustomAPIProject.Repository;
-using CustomAPIProject.Services;
+﻿using CustomAPIProject.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -21,7 +17,7 @@ namespace CustomAPIProject.Filters
         private readonly AppSettings _appSettings;
         private readonly ILogger logger;
 
-        public Middleware(RequestDelegate next, IOptions<AppSettings> appSettings, ILogger<UnhandledExceptionMiddleware> logger)
+        public Middleware(RequestDelegate next, IOptions<AppSettings> appSettings, ILogger<HandledExceptionMiddleware> logger)
         {
             _next = next;
             _appSettings = appSettings.Value;
@@ -98,7 +94,7 @@ namespace CustomAPIProject.Filters
 
         private async Task TokenError(HttpContext context,string msg)
         {
-            context.Response.StatusCode = 401;
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(
                 new { msg = msg }
                 );
