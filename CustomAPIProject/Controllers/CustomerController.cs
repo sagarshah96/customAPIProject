@@ -39,6 +39,7 @@ namespace CustomAPIProject.Controllers
                 return NotFound();
             return Ok(customer);
 
+            #region Custom Cache Using IMemoryCache
             //if (!_cache.TryGetValue("_CustomerCache", out List<Customer> customer))
             //{
             //    customer = _CustomerRepo.GetAll().Where(x => x.IsActive == true).ToList();
@@ -51,6 +52,7 @@ namespace CustomAPIProject.Controllers
             //    _cache.Set("_CustomerCache", customer, cacheEntryOptions);
             //}
             //return Ok(customer);
+            #endregion
         }
 
 
