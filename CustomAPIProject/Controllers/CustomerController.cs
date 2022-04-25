@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 namespace CustomAPIProject.Controllers
 {
 
-    [Route("api/[controller]/[action]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
@@ -24,11 +25,12 @@ namespace CustomAPIProject.Controllers
         {
             _CustomerRepo = crepository;
             _LoginRepo = lrepository;
-          //  _cache = memoryCache;
+            //  _cache = memoryCache;
 
         }
 
         /// Custom Cachable
+        [MapToApiVersion("1.0")]
         [Cachable(100000)]
         [Authorize(Roles.Admin)]
         [HttpGet]
@@ -68,6 +70,7 @@ namespace CustomAPIProject.Controllers
         //    return Ok(customer);
         //}
 
+        [MapToApiVersion("1.0")]
         [Authorize(Roles.Admin, Roles.Customer)]
         [HttpGet("{id}")]
         public IActionResult GetCustomerByID(int id)
@@ -78,6 +81,8 @@ namespace CustomAPIProject.Controllers
             return Ok(customer);
         }
 
+
+        [MapToApiVersion("1.0")]
         [HttpPost]
         public IActionResult SaveCustomer(CustomerModel objCustomer)
         {
@@ -98,6 +103,7 @@ namespace CustomAPIProject.Controllers
             return Ok("Customer Saved Successfully.!!");
         }
 
+        [MapToApiVersion("1.0")]
         [Authorize(Roles.Admin, Roles.Customer)]
         [HttpPut]
         public IActionResult UpdateCustomer(CustomerModel objCustomer)
@@ -117,6 +123,7 @@ namespace CustomAPIProject.Controllers
             return Ok("Customer Update Successfully.!!");
         }
 
+        [MapToApiVersion("1.0")]
         [Authorize(Roles.Admin)]
         [HttpDelete("{id}")]
         public IActionResult DeleteCusomer(int id)

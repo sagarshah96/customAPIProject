@@ -28,7 +28,14 @@ namespace CustomAPIProject.Filters
         {
 
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string controllerName = (string)context.Request.RouteValues["Controller"];
+            string[] controllerName = context.Request.Path.ToString().Split("/");
+            bool isController = false;
+            foreach (var item in controllerName.Where(x => x.Contains("Login") || x.Contains("Language")).ToList())
+            {
+                isController = true;
+                break;
+            }
+            //string controllerName = (string)context.Request.RouteValues["Controller"];
             bool isValid = false;
             if (token != null)
             {
@@ -51,7 +58,7 @@ namespace CustomAPIProject.Filters
             }
             else
             {
-                if (controllerName != "Login")
+                if (!isController)
                 {
                     await TokenError(context, "Please Enter Token.!!");
                     return;
@@ -92,7 +99,7 @@ namespace CustomAPIProject.Filters
             return true;
         }
 
-        private async Task TokenError(HttpContext context,string msg)
+        private async Task TokenError(HttpContext context, string msg)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(

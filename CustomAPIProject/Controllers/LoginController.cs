@@ -16,7 +16,8 @@ using System.Threading.Tasks;
 
 namespace CustomAPIProject.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -29,9 +30,15 @@ namespace CustomAPIProject.Controllers
             _appSettings = appSettings.Value;
         }
 
+        //[Validate]
+        [MapToApiVersion("1.0")]
         [HttpPost]
         public IActionResult Login(LoginModel loginModel)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState.SelectMany(x => x.Value.Errors));
+            //}
             //string str = Common.Decrypt(loginModel.Password);
             //string str1 = Common.Encrypt(loginModel.Password);
             var objlogin = _LoginRepo.GetAll().FirstOrDefault(x => x.Email == loginModel.Email && x.Password == Common.Encrypt(loginModel.Password));
@@ -46,7 +53,7 @@ namespace CustomAPIProject.Controllers
             return NotFound("Invalid User Name and Password");
 
         }
-
+        [MapToApiVersion("1.0")]
         [Authorize(Roles.Admin, Roles.Customer)]
         [HttpPost]
         public IActionResult Logout()
