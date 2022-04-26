@@ -36,7 +36,7 @@ namespace CustomAPIProject
         }
 
         public IConfiguration Configuration { get; }
-        private const string enUSCulture = "en-US";
+        public const string enUSCulture = "en-US";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -47,7 +47,7 @@ namespace CustomAPIProject
             {
                 var supportedCultures = new[]
                 {
-                    new CultureInfo("en-us"),
+                    new CultureInfo("en-US"),
                     new CultureInfo("fr-FR")
                 };
 

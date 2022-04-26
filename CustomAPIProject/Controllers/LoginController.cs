@@ -22,12 +22,14 @@ namespace CustomAPIProject.Controllers
     public class LoginController : ControllerBase
     {
         private readonly _IRepository<Login> _LoginRepo;
+        private readonly _IRepository<Customer> _CustomerRepo;
         private readonly AppSettings _appSettings;
 
-        public LoginController(_IRepository<Login> lrepository, IOptions<AppSettings> appSettings)
+        public LoginController(_IRepository<Login> lrepository, IOptions<AppSettings> appSettings, _IRepository<Customer> crepository)
         {
             _LoginRepo = lrepository;
             _appSettings = appSettings.Value;
+            _CustomerRepo = crepository;
         }
 
         //[Validate]
@@ -45,14 +47,21 @@ namespace CustomAPIProject.Controllers
             var token = "";
             if (objlogin != null)
             {
-                token = generateJwtToken(objlogin);
-                objlogin.Token = token;
-                _LoginRepo.Update(objlogin);
-                return Ok(token);
+                bool isActive = _CustomerRepo.GetByID(objlogin.CustomerId).IsActive;
+                if (isActive)
+                {
+                    token = generateJwtToken(objlogin);
+                    objlogin.Token = token;
+                    _LoginRepo.Update(objlogin);
+                    return Ok(token);
+                }
+                else
+                    return Ok("Your account has been deactivated. Please contact to admin.");
             }
-            return NotFound("Invalid User Name and Password");
+            return NotFound("Invalid User Name and Password.");
 
         }
+
         [MapToApiVersion("1.0")]
         [Authorize(Roles.Admin, Roles.Customer)]
         [HttpPost]
